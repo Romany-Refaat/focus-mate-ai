@@ -12,7 +12,6 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const validateEmail = (email: string) => {
-    // RFC 5322 compliant email regex
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     return emailRegex.test(email);
   };
@@ -37,9 +36,12 @@ const SignUp = () => {
 
     try {
       setIsSubmitting(true);
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: window.location.origin + '/signin'
+        }
       });
 
       if (error) {
@@ -51,13 +53,22 @@ const SignUp = () => {
         return;
       }
 
-      toast.success("Account created successfully! Please check your email to confirm your account.");
+      if (data?.user?.identities?.length === 0) {
+        toast.error("An account with this email already exists");
+        return;
+      }
+
+      toast.success(
+        "Account created! Please check your email to confirm your account.",
+        {
+          duration: 6000,
+        }
+      );
       navigate("/signin");
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast.error(error.message || "Error creating account");
     } finally {
-      // Reset submission state after 30 seconds
       setTimeout(() => setIsSubmitting(false), 30000);
     }
   };
