@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Music } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const SpotifyPlayer = () => {
   const [isExpanded, setIsExpanded] = useState(false);
