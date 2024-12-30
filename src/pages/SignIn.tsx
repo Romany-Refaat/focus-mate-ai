@@ -23,7 +23,14 @@ const SignIn = () => {
 
       if (error) {
         if (error.message.includes("Email not confirmed")) {
-          toast.error("Please confirm your email before signing in. Check your inbox for the confirmation link.");
+          // Send another confirmation email
+          await supabase.auth.resend({
+            type: 'signup',
+            email,
+          });
+          toast.error(
+            "Please confirm your email before signing in. A new confirmation link has been sent to your email."
+          );
         } else {
           toast.error("Invalid email or password");
         }
