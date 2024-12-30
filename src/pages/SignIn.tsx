@@ -12,6 +12,11 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   const handleResendConfirmation = async () => {
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.resend({
         type: 'signup',
@@ -29,29 +34,36 @@ const SignIn = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isLoading) return;
+    
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
         if (error.message.includes("Email not confirmed")) {
-          toast.error("Please confirm your email before signing in", {
+          toast("Please confirm your email before signing in", {
+            description: "Click the button below to resend the confirmation email.",
             action: {
               label: "Resend confirmation",
               onClick: handleResendConfirmation
-            }
+            },
+            duration: 5000,
           });
           return;
         }
         throw error;
       }
 
-      toast.success("Signed in successfully");
-      navigate("/");
+      if (data.user) {
+        toast.success("Signed in successfully");
+        navigate("/");
+      }
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast.error(error.message || "Error signing in");
