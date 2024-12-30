@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -14,11 +13,17 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      toast.success("Account created successfully");
-      navigate("/");
-    } catch (error) {
-      toast.error("Error creating account");
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      toast.success("Check your email to confirm your account");
+      navigate("/signin");
+    } catch (error: any) {
+      toast.error(error.message || "Error creating account");
     }
   };
 

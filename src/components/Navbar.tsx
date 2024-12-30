@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Menu, X, User, Timer, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { auth } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Navbar = () => {
@@ -13,10 +12,11 @@ export const Navbar = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       toast.success("Signed out successfully");
-    } catch (error) {
-      toast.error("Error signing out");
+    } catch (error: any) {
+      toast.error(error.message || "Error signing out");
     }
   };
 
