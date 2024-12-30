@@ -8,29 +8,45 @@ import { supabase } from "@/integrations/supabase/client";
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Add password validation
     if (password.length < 6) {
       toast.error("Password should be at least 6 characters");
       return;
     }
 
+    if (isSubmitting) {
+      toast.error("Please wait before trying again");
+      return;
+    }
+
     try {
+      setIsSubmitting(true);
       const { error } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('rate_limit')) {
+          toast.error("Please wait a moment before trying again");
+        } else {
+          throw error;
+        }
+        return;
+      }
 
       toast.success("Account created successfully");
       navigate("/signin");
     } catch (error: any) {
       toast.error(error.message || "Error creating account");
+    } finally {
+      // Reset submission state after 30 seconds
+      setTimeout(() => setIsSubmitting(false), 30000);
     }
   };
 
@@ -50,6 +66,7 @@ const SignUp = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isSubmitting}
             />
             <Input
               type="password"
@@ -58,14 +75,15 @@ const SignUp = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
+              disabled={isSubmitting}
             />
             <p className="text-sm text-muted-foreground">
               Password must be at least 6 characters long
             </p>
           </div>
 
-          <Button type="submit" className="w-full">
-            Sign Up
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Please wait..." : "Sign Up"}
           </Button>
 
           <p className="text-center text-muted-foreground">
