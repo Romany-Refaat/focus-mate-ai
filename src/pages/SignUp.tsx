@@ -12,6 +12,13 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Add password validation
+    if (password.length < 6) {
+      toast.error("Password should be at least 6 characters");
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -50,7 +57,11 @@ const SignUp = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
             />
+            <p className="text-sm text-muted-foreground">
+              Password must be at least 6 characters long
+            </p>
           </div>
 
           <Button type="submit" className="w-full">
