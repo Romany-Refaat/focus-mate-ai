@@ -10,23 +10,22 @@ interface SessionTypeProps {
 
 export const SessionType = ({ currentType, onTypeChange }: SessionTypeProps) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-8 text-lg">
       {[
         { type: "work" as const, label: "Work" },
         { type: "break" as const, label: "Break" },
         { type: "longBreak" as const, label: "Long break" },
       ].map(({ type, label }) => (
-        <Button
+        <button
           key={type}
-          variant="ghost"
           onClick={() => onTypeChange(type)}
           className={cn(
-            "px-6",
-            currentType === type && "bg-primary text-primary-foreground hover:bg-primary/90"
+            "text-muted-foreground hover:text-primary transition-colors relative pb-2",
+            currentType === type && "text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary"
           )}
         >
           {label}
-        </Button>
+        </button>
       ))}
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { toast } from "./ui/use-toast";
+import { toast } from "sonner";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
 interface TimerProps {
@@ -44,10 +44,7 @@ export const Timer = ({ duration, onComplete, isActive, onToggle }: TimerProps) 
 
   const handleReset = () => {
     setTimeLeft(duration);
-    toast({
-      title: "Timer Reset",
-      description: "Your timer has been reset to the original duration.",
-    });
+    toast.success("Timer Reset");
   };
 
   return (
@@ -55,26 +52,17 @@ export const Timer = ({ duration, onComplete, isActive, onToggle }: TimerProps) 
       <div className="timer-text text-foreground">
         {formatTime(timeLeft)}
       </div>
-      <div className="flex gap-4">
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={onToggle}
-          className="w-32"
-        >
-          {isActive ? <Pause className="mr-2" /> : <Play className="mr-2" />}
-          {isActive ? "Pause" : "Start"}
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={handleReset}
-          className="w-32"
-        >
-          <RotateCcw className="mr-2" />
-          Reset
-        </Button>
-      </div>
+      <p className="text-muted-foreground text-lg">
+        You will now start a {Math.floor(duration / 60)}:00 pomodoro, keep up the good work!
+      </p>
+      <Button
+        variant="default"
+        size="lg"
+        onClick={onToggle}
+        className="w-32 bg-primary hover:bg-primary/90"
+      >
+        {isActive ? "Pause" : "Start"}
+      </Button>
     </div>
   );
 };

@@ -78,22 +78,25 @@ export const FocusDetector = ({ onFocusChange }: FocusDetectorProps) => {
   }, [model, isEnabled, onFocusChange]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center space-x-2">
+    <div className="w-full max-w-lg space-y-4 bg-card rounded-lg p-6">
+      <div className="flex items-center justify-between">
+        <Label htmlFor="camera-mode">Camera</Label>
         <Switch
           id="camera-mode"
           checked={isEnabled}
           onCheckedChange={setIsEnabled}
         />
-        <Label htmlFor="camera-mode">Camera Focus Detection</Label>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Don't worry! No data is collected, we use camera to ensure the points system stays clean!
+      </p>
       {isEnabled && (
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className="w-64 h-48 rounded-lg object-cover"
+          className="w-full aspect-video rounded-lg object-cover"
         />
       )}
     </div>
