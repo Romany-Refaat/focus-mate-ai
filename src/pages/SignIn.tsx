@@ -22,22 +22,7 @@ const SignIn = () => {
       });
 
       if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          // Check if the user exists but hasn't confirmed their email
-          const { data: { users } } = await supabase.auth.admin.listUsers({
-            filters: {
-              email: email
-            }
-          });
-
-          if (users && users.length > 0 && !users[0].email_confirmed_at) {
-            toast.error("Please confirm your email before signing in");
-          } else {
-            toast.error("Invalid email or password");
-          }
-        } else {
-          toast.error(error.message);
-        }
+        toast.error("Invalid email or password");
         return;
       }
 
