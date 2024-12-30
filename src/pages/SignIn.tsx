@@ -11,6 +11,22 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const handleResendConfirmation = async () => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Confirmation email sent! Please check your inbox.");
+    } catch (error: any) {
+      console.error("Error resending confirmation:", error);
+      toast.error(error.message || "Failed to resend confirmation email");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -23,33 +39,22 @@ const SignIn = () => {
 
       if (error) {
         if (error.message.includes("Email not confirmed")) {
-          const { error: resendError } = await supabase.auth.resend({
-            type: 'signup',
-            email,
-          });
-
-          if (resendError) {
-            toast.error("Error sending confirmation email. Please try again later.");
-            console.error("Resend error:", resendError);
-            return;
-          }
-
-          toast.info("Email Confirmation Required", {
-            description: "Please check your inbox and confirm your email address. A new confirmation link has been sent.",
-            duration: 8000,
+          toast.error("Please confirm your email before signing in", {
+            action: {
+              label: "Resend confirmation",
+              onClick: handleResendConfirmation
+            }
           });
           return;
         }
-        
-        toast.error(error.message || "Invalid email or password");
-        return;
+        throw error;
       }
 
       toast.success("Signed in successfully");
       navigate("/");
     } catch (error: any) {
-      toast.error(error.message || "An unexpected error occurred");
       console.error("Sign in error:", error);
+      toast.error(error.message || "Error signing in");
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +65,7 @@ const SignIn = () => {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-primary">Welcome Back</h2>
-          <p className="mt-2 text-muted-foreground">Sign in to your account</p>
+          <p className="mt-2 text-muted-foreground">Sign in to MainFocus</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
