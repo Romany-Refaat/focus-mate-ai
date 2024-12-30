@@ -18,7 +18,7 @@ export const Timer = ({ duration, onComplete, isActive, onToggle }: TimerProps) 
   }, [duration]);
 
   useEffect(() => {
-    let interval: number;
+    let interval: NodeJS.Timeout;
     
     if (isActive && timeLeft > 0) {
       interval = setInterval(() => {

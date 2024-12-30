@@ -4,6 +4,7 @@ import { FocusDetector } from "@/components/FocusDetector";
 import { SessionType } from "@/components/SessionType";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type SessionTypes = "work" | "break" | "longBreak";
 
