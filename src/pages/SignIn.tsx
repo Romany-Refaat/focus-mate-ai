@@ -16,7 +16,7 @@ const SignIn = () => {
     setIsLoading(true);
 
     try {
-      const { data: { user }, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -29,27 +29,27 @@ const SignIn = () => {
           });
 
           if (resendError) {
-            toast.error("Error sending confirmation email. Please try again.");
+            toast.error("Error sending confirmation email. Please try again later.");
+            console.error("Resend error:", resendError);
             return;
           }
 
-          toast(
-            "Please confirm your email",
-            {
-              description: "A new confirmation link has been sent to your email.",
-              duration: 5000,
-            }
-          );
-        } else {
-          toast.error("Invalid email or password");
+          toast.info("Email Confirmation Required", {
+            description: "Please check your inbox and confirm your email address. A new confirmation link has been sent.",
+            duration: 8000,
+          });
+          return;
         }
+        
+        toast.error(error.message || "Invalid email or password");
         return;
       }
 
       toast.success("Signed in successfully");
       navigate("/");
     } catch (error: any) {
-      toast.error(error.message || "Error signing in");
+      toast.error(error.message || "An unexpected error occurred");
+      console.error("Sign in error:", error);
     } finally {
       setIsLoading(false);
     }
