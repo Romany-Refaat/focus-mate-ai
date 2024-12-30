@@ -22,12 +22,11 @@ const SignIn = () => {
       });
 
       if (error) {
-        toast.error("Invalid email or password");
-        return;
-      }
-
-      if (!user?.email_confirmed_at) {
-        toast.error("Please confirm your email before signing in");
+        if (error.message.includes("Email not confirmed")) {
+          toast.error("Please confirm your email before signing in. Check your inbox for the confirmation link.");
+        } else {
+          toast.error("Invalid email or password");
+        }
         return;
       }
 
