@@ -23,13 +23,22 @@ const SignIn = () => {
 
       if (error) {
         if (error.message.includes("Email not confirmed")) {
-          // Send another confirmation email
-          await supabase.auth.resend({
+          const { error: resendError } = await supabase.auth.resend({
             type: 'signup',
             email,
           });
-          toast.error(
-            "Please confirm your email before signing in. A new confirmation link has been sent to your email."
+
+          if (resendError) {
+            toast.error("Error sending confirmation email. Please try again.");
+            return;
+          }
+
+          toast(
+            "Please confirm your email",
+            {
+              description: "A new confirmation link has been sent to your email.",
+              duration: 5000,
+            }
           );
         } else {
           toast.error("Invalid email or password");
