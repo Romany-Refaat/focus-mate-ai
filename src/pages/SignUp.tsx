@@ -11,8 +11,19 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
+  const validateEmail = (email: string) => {
+    // RFC 5322 compliant email regex
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
 
     if (password.length < 6) {
       toast.error("Password should be at least 6 characters");
@@ -40,9 +51,10 @@ const SignUp = () => {
         return;
       }
 
-      toast.success("Account created successfully");
+      toast.success("Account created successfully! Please check your email to confirm your account.");
       navigate("/signin");
     } catch (error: any) {
+      console.error("Sign up error:", error);
       toast.error(error.message || "Error creating account");
     } finally {
       // Reset submission state after 30 seconds
