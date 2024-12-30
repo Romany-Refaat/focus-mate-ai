@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -14,11 +13,17 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
       toast.success("Signed in successfully");
       navigate("/");
-    } catch (error) {
-      toast.error("Error signing in");
+    } catch (error: any) {
+      toast.error(error.message || "Error signing in");
     }
   };
 
